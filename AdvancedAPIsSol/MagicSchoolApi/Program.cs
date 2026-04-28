@@ -1,3 +1,8 @@
+using MagicSchoolApi.Controllers;
+using MagicSchoolApi.Repository;
+using MagicSchoolApi.Service;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+
 namespace MagicSchoolApi
 {
     public class Program
@@ -8,16 +13,20 @@ namespace MagicSchoolApi
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<ISpellService, SpellService>();
+            builder.Services.AddScoped<ISpellRepository, SpellRepository>();
+            builder.Services.AddHealthChecks()
+            .AddCheck<ProductHealthCheck>("product_file_health_check",
+            failureStatus: HealthStatus.Unhealthy,
+            tags: new[] { "file", "products" });
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+            app.UseHealthChecks("/health");
+        
+
+
+       
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
