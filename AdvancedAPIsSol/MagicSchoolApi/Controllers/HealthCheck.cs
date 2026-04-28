@@ -4,19 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Text.Json;
 
-namespace MagicSchoolApi.Controllers
+namespace MagicSchoolApi.HealthChecks
 {
-    
     public class ProductHealthCheck : IHealthCheck
     {
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             var jsonFilePath = @"Resources\teachers.json";
-
             var jsonData = await File.ReadAllTextAsync(jsonFilePath);
-
             var productsData = JsonSerializer.Deserialize<List<Teacher>>(jsonData);
-
             int products = productsData.Count();
 
             if (products > 0)

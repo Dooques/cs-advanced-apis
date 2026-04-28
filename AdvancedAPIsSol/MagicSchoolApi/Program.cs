@@ -1,4 +1,4 @@
-using MagicSchoolApi.Controllers;
+using MagicSchoolApi.HealthChecks;
 using MagicSchoolApi.Repository;
 using MagicSchoolApi.Service;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -13,8 +13,12 @@ namespace MagicSchoolApi
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
             builder.Services.AddScoped<ISpellService, SpellService>();
             builder.Services.AddScoped<ISpellRepository, SpellRepository>();
+            builder.Services.AddScoped<ITeacherService, TeacherService>();
+            builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
+
             builder.Services.AddHealthChecks()
             .AddCheck<ProductHealthCheck>("product_file_health_check",
             failureStatus: HealthStatus.Unhealthy,
@@ -22,11 +26,7 @@ namespace MagicSchoolApi
 
             var app = builder.Build();
 
-            app.UseHealthChecks("/health");
-        
-
-
-       
+            app.UseHealthChecks("/health");       
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
